@@ -4,7 +4,7 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/ai_prompting_academy.html"
+      "dest": "/index.html"
     }
   ]
 }
