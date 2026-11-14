@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prompting Academy: How to Talk to Smart Robots!</title>
+    <!-- Load Tailwind CSS for responsive, utility-first styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Fredoka & Inter fonts for playful headings and ultra-legible body text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['Fredoka', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 3s infinite',
+                        'wiggle': 'wiggle 1s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-sky-50 text-slate-800 font-sans antialiased selection:bg-amber-300 selection:text-slate-900">
+
+    <!-- Custom Toast / Notification Container (Replaces alert() cleanly) -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Sticky Gamified Top Progress Header -->
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b-4 border-sky-200 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+                <span class="text-2xl sm:text-3xl animate-bounce-slow" role="img" aria-label="Robot">🤖</span>
+                <span class="font-display font-bold text-lg sm:text-xl text-sky-700 tracking-tight">AI Prompting Academy</span>
+            </div>
+            
+            <!-- Star Counter & Progress Bar -->
+            <div class="flex items-center gap-3 bg-amber-50 border-2 border-amber-300 px-3.5 py-1.5 rounded-full shadow-inner">
+                <span class="text-xl" role="img" aria-label="Star">⭐</span>
+                <div class="flex flex-col">
+                    <div class="flex items-center gap-1.5">
+                        <span class="font-display font-bold text-amber-700 text-sm sm:text-base">
+                            Stars Earned: <span id="star-count" class="text-amber-600 text-lg">0</span> / <span id="star-total">7</span>
+                        </span>
+                    </div>
+                    <div class="w-28 sm:w-36 h-2 bg-amber-200 rounded-full overflow-hidden mt-0.5">
+                        <div id="star-progress-bar" class="h-full bg-gradient-to-r from-amber-400 to-orange-500 transition-all duration-500 rounded-full" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-5xl mx-auto px-4 py-6 sm:py-10 space-y-10 sm:space-y-14">
+
+        <!-- 1. HERO HEADER SECTION -->
+        <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-sky-400 via-indigo-500 to-purple-600 text-white p-6 sm:p-10 md:p-12 shadow-xl border-4 border-white">
+            <!-- Decorative Floating Shapes -->
+            <div class="absolute -top-10 -right-10 w-40 h-40 bg-yellow-300/20 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="absolute -bottom-12 -left-10 w-48 h-48 bg-pink-400/25 rounded-full blur-2xl pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
+                <div class="flex-1 text-center md:text-left space-y-4">
+                    <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-semibold text-amber-200 border border-white/30">
+                        <span>🚀</span> Junior AI Explorer Training
+                    </div>
+                    <h1 class="font-display font-bold text-3xl sm:text-4xl md:text-5xl leading-tight drop-shadow-sm">
+                        AI Prompting Academy:<br>
+                        <span class="text-amber-300">How to Talk to Smart Robots!</span>
+                    </h1>
+                    <p class="text-base sm:text-lg text-sky-100 max-w-xl mx-auto md:mx-0 font-medium">
+                        Unlock your creativity by learning the secret language of AI! Complete interactive missions below to earn all <strong class="text-amber-300">7 Golden Stars</strong> and unlock your official diploma.
+                    </p>
+                    <div class="pt-2 flex flex-wrap justify-center md:justify-start gap-3">
+                        <a href="#module-1" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-display font-bold px-6 py-3 rounded-2xl shadow-lg shadow-indigo-900/30 transition transform hover:-translate-y-0.5 active:translate-y-0">
+                            Start Your Training! 👇
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Friendly Custom SVG Robot Mascot -->
+                <div class="w-44 sm:w-52 md:w-60 flex-shrink-0 flex justify-center">
+                    <svg viewBox="0 0 220 220" class="w-full h-auto drop-shadow-xl" aria-label="Sparky the Friendly AI Robot">
+                        <!-- Antenna -->
+                        <line x1="110" y1="38" x2="110" y2="16" stroke="#FDE047" stroke-width="6" stroke-linecap="round"/>
+                        <circle cx="110" cy="14" r="9" fill="#FB7185"/>
+                        <!-- Ears -->
+                        <rect x="26" y="76" width="16" height="36" rx="8" fill="#FBBF24"/>
+                        <rect x="178" y="76" width="16" height="36" rx="8" fill="#FBBF24"/>
+                        <!-- Head -->
+                        <rect x="40" y="38" width="140" height="106" rx="28" fill="#FFFFFF" stroke="#E0F2FE" stroke-width="4"/>
+                        <!-- Screen Face -->
+                        <rect x="54" y="54" width="112" height="74" rx="18" fill="#1E293B"/>
+                        <!-- Happy Eyes -->
+                        <circle cx="84" cy="85" r="11" fill="#38BDF8"/>
+                        <circle cx="87" cy="82" r="3.5" fill="#FFFFFF"/>
+                        <circle cx="136" cy="85" r="11" fill="#38BDF8"/>
+                        <circle cx="139" cy="82" r="3.5" fill="#FFFFFF"/>
+                        <!-- Cheeks -->
+                        <ellipse cx="72" cy="102" rx="7" ry="4" fill="#FB7185" opacity="0.8"/>
+                        <ellipse cx="148" cy="102" rx="7" ry="4" fill="#FB7185" opacity="0.8"/>
+                        <!-- Smile -->
+                        <path d="M 96 102 Q 110 116 124 102" stroke="#34D399" stroke-width="5" stroke-linecap="round" fill="none"/>
+                        <!-- Body -->
+                        <rect x="64" y="150" width="92" height="54" rx="20" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="4"/>
+                        <!-- Heart/Star Badge on Chest -->
+                        <circle cx="110" cy="177" r="15" fill="#FEF08A"/>
+                        <text x="110" y="183" text-anchor="middle" font-size="18">⚡</text>
+                        <!-- Waving Arms -->
+                        <path d="M 62 162 Q 32 145 28 122" stroke="#FBBF24" stroke-width="12" stroke-linecap="round" fill="none"/>
+                        <circle cx="28" cy="118" r="9" fill="#38BDF8"/>
+                        <path d="M 158 162 Q 186 175 190 192" stroke="#FBBF24" stroke-width="12" stroke-linecap="round" fill="none"/>
+                        <circle cx="190" cy="195" r="9" fill="#38BDF8"/>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. MODULE 1: WHAT IS AI? (THE MAGIC ROBOT ANALOGY) -->
+        <section id="module-1" class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border-2 border-sky-200 space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-slate-100 pb-4">
+                <div class="flex items-center gap-3">
+                    <span class="bg-sky-100 text-sky-700 font-display font-bold px-3.5 py-1 rounded-xl text-sm">MODULE 1</span>
+                    <h2 class="font-display font-bold text-2xl sm:text-3xl text-slate-800">What is AI? The Magic Robot Analogy 🧠</h2>
+                </div>
+                <label class="inline-flex items-center gap-2 cursor-pointer bg-amber-50 hover:bg-amber-100 border-2 border-amber-300 px-3.5 py-1.5 rounded-xl transition select-none">
+                    <input type="checkbox" class="star-checkbox w-5 h-5 accent-amber-500 rounded cursor-pointer" data-star-id="mod1">
+                    <span class="font-display font-semibold text-sm text-amber-800">I Tried It! (+1 ⭐)</span>
+                </label>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 items-center">
+                <div class="space-y-3 text-slate-600 text-base leading-relaxed">
+                    <p>
+                        Imagine you have a super-friendly robot helper named <strong class="text-sky-600">Sparky</strong> who has read millions of books, stories, and encyclopedias!
+                    </p>
+                    <p>
+                        Sparky loves helping you brainstorm, write stories, and learn cool facts—<strong class="text-rose-500">but Sparky is NOT a mind-reader!</strong> If you give Sparky a blurry, super-short instruction (called a <strong>Prompt</strong>), Sparky has to guess what you want.
+                    </p>
+                    <div class="bg-sky-50 border-l-4 border-sky-400 p-4 rounded-r-2xl text-sky-900 font-medium text-sm">
+                        💡 <strong>Secret Rule:</strong> Better instructions = way more awesome robot answers!
+                    </div>
+                </div>
+
+                <!-- Interactive Toggle: Blurry vs. Crystal-Clear Prompt -->
+                <div class="bg-slate-50 rounded-2xl p-5 border-2 border-slate-200 space-y-4">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="font-display font-bold text-sm uppercase tracking-wider text-slate-500">Test Sparky's Brain:</span>
+                        <div class="inline-flex rounded-xl bg-slate-200 p-1" role="group">
+                            <button id="btn-blurry" type="button" onclick="togglePromptExample('blurry')" class="px-3 py-1.5 rounded-lg font-display font-bold text-xs sm:text-sm bg-rose-500 text-white shadow transition">
+                                🌫️ Blurry Prompt
+                            </button>
+                            <button id="btn-clear" type="button" onclick="togglePromptExample('clear')" class="px-3 py-1.5 rounded-lg font-display font-bold text-xs sm:text-sm text-slate-600 hover:text-slate-900 transition">
+                                ✨ Crystal-Clear
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Prompt Display Box -->
+                    <div id="example-prompt-box" class="bg-rose-50 border-2 border-rose-200 rounded-xl p-3.5 transition-all">
+                        <div class="text-xs font-bold uppercase text-rose-600 mb-1">You say to AI:</div>
+                        <p id="example-prompt-text" class="font-semibold text-slate-800">"Tell me about dogs."</p>
+                    </div>
+
+                    <!-- Dynamic AI Response Box -->
+                    <div id="example-response-box" class="bg-white border-2 border-slate-200 rounded-xl p-3.5 shadow-sm transition-all">
+                        <div class="flex items-center gap-1.5 text-xs font-bold uppercase text-slate-500 mb-1">
+                            <span>🤖</span> Sparky replies:
+                        </div>
+                        <p id="example-response-text" class="text-sm text-slate-600 italic">
+                            "Dogs are domesticated mammals with four legs and fur. They bark and are common household pets." (Yawn... kinda boring! 😴)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. MODULE 2: THE 4-PART PROMPT RECIPE & PROMPT BUILDER MACHINE -->
+        <section id="module-2" class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border-2 border-purple-200 space-y-8">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-slate-100 pb-4">
+                <div class="flex items-center gap-3">
+                    <span class="bg-purple-100 text-purple-700 font-display font-bold px-3.5 py-1 rounded-xl text-sm">MODULE 2</span>
+                    <h2 class="font-display font-bold text-2xl sm:text-3xl text-slate-800">The 4-Part Prompt Recipe 🧪</h2>
+                </div>
+                <label class="inline-flex items-center gap-2 cursor-pointer bg-amber-50 hover:bg-amber-100 border-2 border-amber-300 px-3.5 py-1.5 rounded-xl transition select-none">
+                    <input type="checkbox" class="star-checkbox w-5 h-5 accent-amber-500 rounded cursor-pointer" data-star-id="mod2">
+                    <span class="font-display font-semibold text-sm text-amber-800">Built a Prompt! (+1 ⭐)</span>
+                </label>
+            </div>
+
+            <!-- 4 Visual Recipe Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Card 1: Role -->
+                <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-4 space-y-2 hover:shadow-md transition">
+                    <div class="w-11 h-11 rounded-xl bg-sky-500 text-white flex items-center justify-center text-2xl shadow-sm">🎭</div>
+                    <h3 class="font-display font-bold text-lg text-sky-900">1. The Role</h3>
+                    <p class="text-xs font-bold uppercase text-sky-600">Who is the AI?</p>
+                    <p class="text-sm text-slate-600">Give the robot a fun costume! E.g., <em>"Act like a silly pirate"</em> or <em>"a space scientist."</em></p>
+                </div>
+
+                <!-- Card 2: Task -->
+                <div class="bg-rose-50 border-2 border-rose-200 rounded-2xl p-4 space-y-2 hover:shadow-md transition">
+                    <div class="w-11 h-11 rounded-xl bg-rose-500 text-white flex items-center justify-center text-2xl shadow-sm">🎯</div>
+                    <h3 class="font-display font-bold text-lg text-rose-900">2. The Task</h3>
+                    <p class="text-xs font-bold uppercase text-rose-600">What do you want?</p>
+                    <p class="text-sm text-slate-600">Use strong action words! E.g., <em>"Write a funny story"</em> or <em>"Explain a science fact."</em></p>
+                </div>
+
+                <!-- Card 3: Context -->
+                <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 space-y-2 hover:shadow-md transition">
+                    <div class="w-11 h-11 rounded-xl bg-amber-400 text-slate-900 flex items-center justify-center text-2xl shadow-sm">🎨</div>
+                    <h3 class="font-display font-bold text-lg text-amber-900">3. The Context</h3>
+                    <p class="text-xs font-bold uppercase text-amber-700">Special Details!</p>
+                    <p class="text-sm text-slate-600">Add flavor! E.g., <em>"for an 8-year-old who loves skateboarding dinosaurs."</em></p>
+                </div>
+
+                <!-- Card 4: Format -->
+                <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4 space-y-2 hover:shadow-md transition">
+                    <div class="w-11 h-11 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-2xl shadow-sm">📋</div>
+                    <h3 class="font-display font-bold text-lg text-emerald-900">4. The Format</h3>
+                    <p class="text-xs font-bold uppercase text-emerald-600">How should it look?</p>
+                    <p class="text-sm text-slate-600">Pick the shape! E.g., <em>"in 3 fun bullet points with a joke at the end."</em></p>
+                </div>
+            </div>
+
+            <!-- Interactive Prompt Builder Machine -->
+            <div class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-3xl p-5 sm:p-7 border-2 border-purple-300 space-y-5">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <h3 class="font-display font-bold text-xl sm:text-2xl text-purple-900 flex items-center gap-2">
+                            <span>⚙️</span> Interactive Prompt Builder Machine
+                        </h3>
+                        <p class="text-sm text-purple-700">Mix and match ingredients below to invent your own super-prompt!</p>
+                    </div>
+                    <button type="button" onclick="randomizeBuilder()" class="bg-white hover:bg-purple-100 text-purple-700 border-2 border-purple-300 font-display font-bold text-sm px-4 py-2 rounded-xl shadow-sm transition active:scale-95">
+                        🎲 Surprise Me!
+                    </button>
+                </div>
+
+                <!-- 4 Dropdown Selectors -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white p-3.5 rounded-2xl border-2 border-sky-200">
+                        <label for="select-role" class="block font-display font-bold text-sm text-sky-700 mb-1">1. Pick a Role 🎭</label>
+                        <select id="select-role" onchange="updatePromptMachine()" class="w-full p-2.5 rounded-xl bg-sky-50 border border-sky-200 text-slate-800 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-sky-400">
+                            <option value="Act like a silly space pirate">🏴‍☠️ A silly space pirate</option>
+                            <option value="Act like a friendly NASA astronaut">👩‍🚀 A friendly NASA astronaut</option>
+                            <option value="Act like a talking T-Rex professor">🦖 A talking T-Rex professor</option>
+                            <option value="Act like a master wizard chef">🧙‍♂️ A master wizard chef</option>
+                            <option value="Act like a super-enthusiastic sports announcer">🎙️ A sports announcer</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-white p-3.5 rounded-2xl border-2 border-rose-200">
+                        <label for="select-task" class="block font-display font-bold text-sm text-rose-700 mb-1">2. Pick a Task 🎯</label>
+                        <select id="select-task" onchange="updatePromptMachine()" class="w-full p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-slate-800 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-rose-400">
+                            <option value="explain how volcanoes erupt">🌋 Explain how volcanoes erupt</option>
+                            <option value="invent a brand-new ice cream flavor">🍦 Invent a brand-new ice cream flavor</option>
+                            <option value="write a mini bedtime adventure story">📖 Write a mini adventure story</option>
+                            <option value="design a secret treehouse fort">🌳 Design a secret treehouse fort</option>
+                            <option value="teach me 3 cool facts about deep-sea creatures">🐙 Teach me 3 facts about sea creatures</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-white p-3.5 rounded-2xl border-2 border-amber-200">
+                        <label for="select-context" class="block font-display font-bold text-sm text-amber-700 mb-1">3. Pick Special Details 🎨</label>
+                        <select id="select-context" onchange="updatePromptMachine()" class="w-full p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-slate-800 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+                            <option value="for an 8-year-old who loves skateboards and pizza">🛹 For a kid who loves skateboards & pizza</option>
+                            <option value="using easy words and lots of sound effects like BOOM and WHOOSH">💥 Using sound effects like BOOM & WHOOSH</option>
+                            <option value="set on a bouncy marshmallow planet"> Marshmallow planet setting</option>
+                            <option value="where a tiny hamster is the hero">🐹 Where a tiny hamster is the hero</option>
+                            <option value="so I can share it with my class tomorrow">🏫 To share with my class tomorrow</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-white p-3.5 rounded-2xl border-2 border-emerald-200">
+                        <label for="select-format" class="block font-display font-bold text-sm text-emerald-700 mb-1">4. Pick a Format 📋</label>
+                        <select id="select-format" onchange="updatePromptMachine()" class="w-full p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-slate-800 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                            <option value="in 3 short bullet points and end with a funny joke!">😂 3 bullet points + a funny joke</option>
+                            <option value="as a short rhyming poem!">🎵 A short rhyming poem</option>
+                            <option value="in 4 numbered steps with fun emojis!">🔢 4 numbered steps with emojis</option>
+                            <option value="as a 5-sentence movie trailer!">🎬 A 5-sentence movie trailer</option>
+                            <option value="with a quiz question at the end for me to guess!">❓ With a quiz question at the end</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Live Generated Prompt Output Box -->
+                <div class="bg-slate-900 text-white rounded-2xl p-4 sm:p-5 shadow-inner space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-display font-bold uppercase tracking-wider text-amber-300">✨ Your Super-Prompt Ready to Copy:</span>
+                        <span class="text-xs text-slate-400 hidden sm:inline">Paste this into any AI chat with a parent!</span>
+                    </div>
+                    <p id="machine-output" class="text-base sm:text-lg font-medium leading-relaxed text-sky-100 bg-slate-800/80 p-4 rounded-xl border border-slate-700">
+                        <!-- Populated by JS on load -->
+                    </p>
+                    <div class="flex justify-end">
+                        <button type="button" onclick="copyTextFromElement('machine-output', true)" class="bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-900 font-display font-bold px-5 py-2.5 rounded-xl shadow-md transition transform active:scale-95 flex items-center gap-2">
+                            <span>📋</span> Copy My Custom Prompt!
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. MODULE 3: FUN PRACTICE MISSIONS -->
+        <section id="module-3" class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border-2 border-emerald-200 space-y-6">
+            <div class="border-b-2 border-slate-100 pb-4">
+                <div class="flex items-center gap-3">
+                    <span class="bg-emerald-100 text-emerald-700 font-display font-bold px-3.5 py-1 rounded-xl text-sm">MODULE 3</span>
+                    <h2 class="font-display font-bold text-2xl sm:text-3xl text-slate-800">Fun Practice Missions 🚀</h2>
+                </div>
+                <p class="text-slate-600 mt-1 text-sm sm:text-base">Copy these awesome prompts to test with a grown-up, then check off each mission to earn <strong class="text-amber-600">3 Stars</strong>!</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Mission 1 -->
+                <div class="flex flex-col justify-between bg-gradient-to-b from-sky-50 to-white border-2 border-sky-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition space-y-4">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-3xl">🦸‍♂️</span>
+                            <span class="bg-sky-200 text-sky-800 font-display font-bold text-xs px-2.5 py-1 rounded-lg">MISSION 1</span>
+                        </div>
+                        <h3 class="font-display font-bold text-xl text-slate-800">The Superhero Creator</h3>
+                        <p class="text-xs text-slate-500">Mix an animal + a silly superpower to invent a brand-new comic hero!</p>
+                        <div id="mission-1-prompt" class="bg-white border border-sky-200 rounded-xl p-3 text-sm text-slate-700 font-medium leading-snug">
+                            "Act like a comic book writer. Invent a brand-new superhero who is half-chameleon and half-toaster. Describe their costume, their secret weakness, and their catchphrase in 3 fun bullet points!"
+                        </div>
+                    </div>
+                    <div class="space-y-2.5 pt-2">
+                        <button type="button" onclick="copyTextFromElement('mission-1-prompt', false)" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-display font-bold text-sm py-2.5 px-4 rounded-xl transition active:scale-95 flex items-center justify-center gap-1.5">
+                            <span>📋</span> Copy Mission Prompt
+                        </button>
+                        <label class="w-full flex items-center justify-center gap-2 cursor-pointer bg-amber-50 hover:bg-amber-100 border-2 border-amber-300 py-2 px-3 rounded-xl transition select-none">
+                            <input type="checkbox" class="star-checkbox w-4 h-4 accent-amber-500 rounded cursor-pointer" data-star-id="mission1">
+                            <span class="font-display font-semibold text-xs sm:text-sm text-amber-800">Mission Complete (+1 ⭐)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Mission 2 -->
+                <div class="flex flex-col justify-between bg-gradient-to-b from-purple-50 to-white border-2 border-purple-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition space-y-4">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-3xl">🪐</span>
+                            <span class="bg-purple-200 text-purple-800 font-display font-bold text-xs px-2.5 py-1 rounded-lg">MISSION 2</span>
+                        </div>
+                        <h3 class="font-display font-bold text-xl text-slate-800">The Space Explainer</h3>
+                        <p class="text-xs text-slate-500">Turn tricky universe mysteries into super-easy, tasty comparisons!</p>
+                        <div id="mission-2-prompt" class="bg-white border border-purple-200 rounded-xl p-3 text-sm text-slate-700 font-medium leading-snug">
+                            "Act like a friendly planetarium guide. Explain what a black hole in space is to a 7-year-old using an analogy about a giant cosmic vacuum cleaner and a pancake. Keep it under 5 sentences!"
+                        </div>
+                    </div>
+                    <div class="space-y-2.5 pt-2">
+                        <button type="button" onclick="copyTextFromElement('mission-2-prompt', false)" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-display font-bold text-sm py-2.5 px-4 rounded-xl transition active:scale-95 flex items-center justify-center gap-1.5">
+                            <span>📋</span> Copy Mission Prompt
+                        </button>
+                        <label class="w-full flex items-center justify-center gap-2 cursor-pointer bg-amber-50 hover:bg-amber-100 border-2 border-amber-300 py-2 px-3 rounded-xl transition select-none">
+                            <input type="checkbox" class="star-checkbox w-4 h-4 accent-amber-500 rounded cursor-pointer" data-star-id="mission2">
+                            <span class="font-display font-semibold text-xs sm:text-sm text-amber-800">Mission Complete (+1 ⭐)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Mission 3 -->
+                <div class="flex flex-col justify-between bg-gradient-to-b from-rose-50 to-white border-2 border-rose-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition space-y-4">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-3xl">🗺️</span>
+                            <span class="bg-rose-200 text-rose-800 font-display font-bold text-xs px-2.5 py-1 rounded-lg">MISSION 3</span>
+                        </div>
+                        <h3 class="font-display font-bold text-xl text-slate-800">Adventure Game Builder</h3>
+                        <p class="text-xs text-slate-500">Turn AI into an interactive Choose-Your-Own-Adventure video game!</p>
+                        <div id="mission-3-prompt" class="bg-white border border-rose-200 rounded-xl p-3 text-sm text-slate-700 font-medium leading-snug">
+                            "Act like a game master! Start a Choose-Your-Own-Adventure story where I am an explorer inside a pyramid made of LEGO bricks. Write 3 exciting sentences, then give me 3 choices (A, B, or C) and wait for my answer!"
+                        </div>
+                    </div>
+                    <div class="space-y-2.5 pt-2">
+                        <button type="button" onclick="copyTextFromElement('mission-3-prompt', false)" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-display font-bold text-sm py-2.5 px-4 rounded-xl transition active:scale-95 flex items-center justify-center gap-1.5">
+                            <span>📋</span> Copy Mission Prompt
+                        </button>
+                        <label class="w-full flex items-center justify-center gap-2 cursor-pointer bg-amber-50 hover:bg-amber-100 border-2 border-amber-300 py-2 px-3 rounded-xl transition select-none">
+                            <input type="checkbox" class="star-checkbox w-4 h-4 accent-amber-500 rounded cursor-pointer" data-star-id="mission3">
+                            <span class="font-display font-semibold text-xs sm:text-sm text-amber-800">Mission Complete (+1 ⭐)</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. MODULE 4: ROBOT SAFETY, QUIZ & PRINTABLE CERTIFICATE -->
+        <section id="module-4" class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border-2 border-amber-300 space-y-8">
+            <div class="border-b-2 border-slate-100 pb-4">
+                <div class="flex items-center gap-3">
+                    <span class="bg-amber-100 text-amber-800 font-display font-bold px-3.5 py-1 rounded-xl text-sm">MODULE 4</span>
+                    <h2 class="font-display font-bold text-2xl sm:text-3xl text-slate-800">Robot Safety & Smart Rules 🛡️</h2>
+                </div>
+                <p class="text-slate-600 mt-1 text-sm sm:text-base">Every great AI Explorer knows the 3 Golden Safety Rules before graduating!</p>
+            </div>
+
+            <!-- 3 Safety Rule Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-rose-50 border-2 border-rose-200 rounded-2xl p-5 space-y-2">
+                    <div class="text-3xl">🔒</div>
+                    <h3 class="font-display font-bold text-lg text-rose-900">1. Keep Secrets Safe</h3>
+                    <p class="text-sm text-slate-700"><strong>Never</strong> tell AI your full name, home address, phone number, passwords, or what school you go to!</p>
+                </div>
+
+                <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-5 space-y-2">
+                    <div class="text-3xl">🧐</div>
+                    <h3 class="font-display font-bold text-lg text-amber-900">2. Double-Check Facts</h3>
+                    <p class="text-sm text-slate-700">Robots sometimes make silly mistakes or "hallucinate" pretend facts. Always check schoolwork with a grown-up or a book!</p>
+                </div>
+
+                <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-5 space-y-2">
+                    <div class="text-3xl">💖</div>
+                    <h3 class="font-display font-bold text-lg text-emerald-900">3. Always Be Kind</h3>
+                    <p class="text-sm text-slate-700">Use AI to build, learn, and spread kindness—never to tease others or cheat on homework!</p>
+                </div>
+            </div>
+
+            <!-- Junior Prompt Master 3-Question Quiz -->
+            <div class="bg-sky-50 rounded-3xl p-5 sm:p-7 border-2 border-sky-200 space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <h3 class="font-display font-bold text-xl sm:text-2xl text-sky-900">🎓 Junior Prompt Master Quiz</h3>
+                        <p class="text-sm text-sky-700">Answer all 3 questions right to earn <strong>2 Bonus Stars</strong> and unlock your Certificate!</p>
+                    </div>
+                    <span id="quiz-badge" class="bg-white border-2 border-sky-300 text-sky-800 font-display font-bold text-xs px-3 py-1.5 rounded-full">
+                        Status: Ready to Play!
+                    </span>
+                </div>
+
+                <form id="quiz-form" class="space-y-5">
+                    <!-- Question 1 -->
+                    <div class="bg-white p-4 rounded-2xl border border-sky-200 space-y-2.5">
+                        <p class="font-display font-bold text-slate-800">1. Which of these is SAFE to share with an AI robot?</p>
+                        <div class="grid sm:grid-cols-3 gap-2 text-sm">
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-sky-50 cursor-pointer">
+                                <input type="radio" name="q1" value="wrong1" class="accent-sky-600">
+                                <span>My home street address</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-sky-50 cursor-pointer">
+                                <input type="radio" name="q1" value="correct" class="accent-sky-600">
+                                <span>That I love purple dinosaurs</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-sky-50 cursor-pointer">
+                                <input type="radio" name="q1" value="wrong2" class="accent-sky-600">
+                                <span>My secret tablet password</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Question 2 -->
+                    <div class="bg-white p-4 rounded-2xl border border-sky-200 space-y-2.5">
+                        <p class="font-display font-bold text-slate-800">2. What are the 4 ingredients in our Prompt Recipe?</p>
+                        <div class="grid sm:grid-cols-3 gap-2 text-sm">
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-sky-50 cursor-pointer">
+                                <input type="radio" name="q2" value="correct" class="accent-sky-600">
+                                <span>Role, Task, Context & Format</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-sky-50 cursor-pointer">
+                                <input type="radio" name="q2" value="wrong1" class="accent-sky-600">
+                                <span>Sugar, Spice, Flour & Eggs</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-sky-50 cursor-pointer">
+                                <input type="radio" name="q2" value="wrong2" class="accent-sky-600">
+                                <span>Guessing, Wishing & Hoping</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Question 3 -->
+                    <div class="bg-white p-4 rounded-2xl border border-sky-200 space-y-2.5">
+                        <p class="font-display font-bold text-slate-800">3. True or False: AI robots know everything and NEVER make mistakes.</p>
+                        <div class="grid sm:grid-cols-2 gap-2 text-sm">
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-sky-50 cursor-pointer">
+                                <input type="radio" name="q3" value="wrong1" class="accent-sky-600">
+                                <span>True — Robots are always 100% right!</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-sky-50 cursor-pointer">
+                                <input type="radio" name="q3" value="correct" class="accent-sky-600">
+                                <span>False — Robots can make silly mistakes, so always double-check!</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-4 pt-1">
+                        <div class="flex items-center gap-2 flex-1 min-w-[220px]">
+                            <label for="explorer-name" class="font-display font-bold text-sm text-sky-900 whitespace-nowrap">Your Explorer Name:</label>
+                            <input type="text" id="explorer-name" placeholder="e.g., Captain Maya" maxlength="30" class="w-full px-3.5 py-2 rounded-xl border-2 border-sky-300 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        </div>
+                        <button type="button" onclick="checkQuiz()" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-display font-bold px-6 py-3 rounded-2xl shadow-md transition transform active:scale-95">
+                            Check Answers & Unlock Certificate! 🏆
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Certificate Reveal Area (Hidden until quiz is passed) -->
+                <div id="certificate-wrapper" class="hidden pt-4">
+                    <div id="printable-certificate" class="relative bg-gradient-to-br from-amber-50 via-white to-sky-50 border-8 border-double border-amber-400 rounded-3xl p-6 sm:p-10 text-center shadow-xl space-y-4">
+                        <div class="flex justify-center items-center gap-3 text-3xl sm:text-4xl">
+                            <span>🌟</span><span>🤖</span><span>🎓</span><span>🤖</span><span>🌟</span>
+                        </div>
+                        <div class="uppercase tracking-widest text-xs sm:text-sm font-bold text-amber-600">
+                            AI Prompting Academy Official Diploma
+                        </div>
+                        <h4 class="font-display font-bold text-2xl sm:text-4xl text-slate-800">
+                            Official AI Prompt Master
+                        </h4>
+                        <p class="text-slate-600 text-sm sm:text-base">This awesome award is proudly presented to</p>
+                        <div id="cert-student-name" class="font-display font-bold text-3xl sm:text-4xl text-indigo-600 underline decoration-amber-400 decoration-4 underline-offset-8 py-1">
+                            Junior AI Explorer
+                        </div>
+                        <p class="text-slate-600 text-sm sm:text-base max-w-lg mx-auto pt-2">
+                            For mastering the <strong>4-Part Prompt Recipe</strong>, completing creative robot missions, and promising to always stay safe and kind online!
+                        </p>
+                        <div class="pt-4 flex flex-wrap items-center justify-around gap-4 border-t border-amber-200 text-xs sm:text-sm text-slate-500">
+                            <div>
+                                <div class="font-display font-bold text-slate-700" id="cert-date">Today</div>
+                                <div>Graduation Date</div>
+                            </div>
+                            <div class="bg-amber-400 text-slate-900 font-display font-bold px-4 py-1.5 rounded-full shadow-sm">
+                                🏅 Certified Robot Whisperer
+                            </div>
+                            <div>
+                                <div class="font-display font-bold text-slate-700">Sparky the AI Robot 🤖</div>
+                                <div>Academy Headmaster</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex justify-center">
+                        <button type="button" onclick="printCertificate()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-display font-bold px-6 py-2.5 rounded-xl shadow transition flex items-center gap-2">
+                            <span>🖨️</span> Print My Certificate!
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="max-w-5xl mx-auto px-4 py-8 text-center text-slate-500 text-sm space-y-2">
+        <p class="font-display font-semibold text-slate-600">Made for curious kids, parents, and teachers! 🚀</p>
+        <p class="text-xs">Tip: Always explore AI tools alongside a parent, guardian, or teacher.</p>
+    </footer>
+
+    <!-- Interactive Logic -->
+    <script>
+        // State tracking for earned stars
+        const earnedStars = new Set();
+        const TOTAL_STARS = 7; // 1 (Mod 1) + 1 (Mod 2) + 3 (Missions) + 2 (Quiz)
+        let quizPassed = false;
+
+        // Custom non-blocking Toast Notification helper (replaces alert)
+        function showToast(message, emoji = '✨') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'pointer-events-auto flex items-center gap-2.5 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl border-2 border-amber-400 font-display text-sm transform transition-all duration-300 translate-y-4 opacity-0';
+            toast.innerHTML = `<span class="text-lg">${emoji}</span><span>${message}</span>`;
+            container.appendChild(toast);
+
+            // Trigger entrance animation
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-4', 'opacity-0');
+            });
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Update Top Star Counter & Progress Bar
+        function updateStarDisplay() {
+            const count = earnedStars.size;
+            document.getElementById('star-count').textContent = count;
+            document.getElementById('star-total').textContent = TOTAL_STARS;
+            const percentage = Math.min(100, Math.round((count / TOTAL_STARS) * 100));
+            document.getElementById('star-progress-bar').style.width = `${percentage}%`;
+        }
+
+        // Attach listeners to all Star Checkboxes
+        document.querySelectorAll('.star-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                const id = e.target.dataset.starId;
+                if (e.target.checked) {
+                    earnedStars.add(id);
+                    showToast('Awesome job! You earned a Golden Star!', '⭐');
+                } else {
+                    earnedStars.delete(id);
+                }
+                updateStarDisplay();
+            });
+        });
+
+        // Module 1: Toggle Blurry vs. Crystal-Clear Prompt Example
+        function togglePromptExample(mode) {
+            const btnBlurry = document.getElementById('btn-blurry');
+            const btnClear = document.getElementById('btn-clear');
+            const promptBox = document.getElementById('example-prompt-box');
+            const promptText = document.getElementById('example-prompt-text');
+            const responseText = document.getElementById('example-response-text');
+
+            if (mode === 'blurry') {
+                btnBlurry.className = 'px-3 py-1.5 rounded-lg font-display font-bold text-xs sm:text-sm bg-rose-500 text-white shadow transition';
+                btnClear.className = 'px-3 py-1.5 rounded-lg font-display font-bold text-xs sm:text-sm text-slate-600 hover:text-slate-900 transition';
+                
+                promptBox.className = 'bg-rose-50 border-2 border-rose-200 rounded-xl p-3.5 transition-all';
+                promptBox.querySelector('div').className = 'text-xs font-bold uppercase text-rose-600 mb-1';
+                promptText.textContent = '"Tell me about dogs."';
+                responseText.textContent = '"Dogs are domesticated mammals with four legs and fur. They bark and are common household pets." (Yawn... kinda boring! 😴)';
+            } else {
+                btnClear.className = 'px-3 py-1.5 rounded-lg font-display font-bold text-xs sm:text-sm bg-emerald-500 text-white shadow transition';
+                btnBlurry.className = 'px-3 py-1.5 rounded-lg font-display font-bold text-xs sm:text-sm text-slate-600 hover:text-slate-900 transition';
+                
+                promptBox.className = 'bg-emerald-50 border-2 border-emerald-200 rounded-xl p-3.5 transition-all';
+                promptBox.querySelector('div').className = 'text-xs font-bold uppercase text-emerald-600 mb-1';
+                promptText.textContent = '"Act like a silly dog detective! Tell me 3 amazing superpowers that real dogs have (like super-smelling) in 3 fun bullet points with a joke at the end!"';
+                responseText.textContent = '"Woof-tastic! 🕵️‍♂️🐕 1. Super-Sniffer: Dogs smell 10,000x better than humans! 2. Radar Ears: They hear squeaky toys from far away! 3. Night Vision: They see in the dark! Joke: What do you call a magic dog? A Labracadabrador! 🎉"';
+            }
+        }
+
+        // Module 2: Update Interactive Prompt Builder Machine
+        function updatePromptMachine() {
+            const role = document.getElementById('select-role').value;
+            const task = document.getElementById('select-task').value;
+            const context = document.getElementById('select-context').value;
+            const format = document.getElementById('select-format').value;
+
+            const fullPrompt = `"${role}. Please ${task} ${context}, ${format}"`;
+            document.getElementById('machine-output').textContent = fullPrompt;
+        }
+
+        // Randomize Prompt Builder Dropdowns
+        function randomizeBuilder() {
+            const ids = ['select-role', 'select-task', 'select-context', 'select-format'];
+            ids.forEach(id => {
+                const select = document.getElementById(id);
+                const randomIndex = Math.floor(Math.random() * select.options.length);
+                select.selectedIndex = randomIndex;
+            });
+            updatePromptMachine();
+            showToast('Rolled a brand-new surprise prompt!', '🎲');
+        }
+
+        // Reliable iFrame-safe Clipboard Copy using document.execCommand('copy')
+        function copyTextFromElement(elementId, autoCheckMod2 = false) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            const textToCopy = el.textContent.trim();
+
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = textToCopy;
+            tempTextarea.style.position = 'fixed';
+            tempTextarea.style.left = '-9999px';
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+
+            try {
+                document.execCommand('copy');
+                showToast('Copied to clipboard! Paste it into your AI chat!', '📋');
+
+                // Automatically award Module 2 star if user copies their custom prompt
+                if (autoCheckMod2) {
+                    const mod2Box = document.querySelector('input[data-star-id="mod2"]');
+                    if (mod2Box && !mod2Box.checked) {
+                        mod2Box.checked = true;
+                        earnedStars.add('mod2');
+                        updateStarDisplay();
+                    }
+                }
+            } catch (err) {
+                showToast('Highlight the text above and press Ctrl+C / Cmd+C to copy!', '💡');
+            } finally {
+                document.body.removeChild(tempTextarea);
+            }
+        }
+
+        // Module 4: Check Quiz & Unlock Certificate
+        function checkQuiz() {
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+            const q3 = document.querySelector('input[name="q3"]:checked');
+
+            if (!q1 || !q2 || !q3) {
+                showToast('Oops! Answer all 3 quiz questions first!', '🤔');
+                return;
+            }
+
+            if (q1.value === 'correct' && q2.value === 'correct' && q3.value === 'correct') {
+                // Award 2 bonus quiz stars
+                earnedStars.add('quiz1');
+                earnedStars.add('quiz2');
+                updateStarDisplay();
+
+                const nameInput = document.getElementById('explorer-name').value.trim();
+                const studentName = nameInput || 'Junior AI Explorer';
+                document.getElementById('cert-student-name').textContent = studentName;
+
+                // Format current date nicely
+                const today = new Date();
+                document.getElementById('cert-date').textContent = today.toLocaleDateString(undefined, {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                const certWrapper = document.getElementById('certificate-wrapper');
+                certWrapper.classList.remove('hidden');
+
+                const quizBadge = document.getElementById('quiz-badge');
+                quizBadge.textContent = 'Status: Passed! (+2 ⭐)';
+                quizBadge.className = 'bg-emerald-500 text-white font-display font-bold text-xs px-3 py-1.5 rounded-full shadow-sm';
+
+                if (!quizPassed) {
+                    showToast('3/3 Correct! +2 Stars & Certificate Unlocked!', '🏆');
+                    quizPassed = true;
+                } else {
+                    showToast('Certificate updated with your name!', '🎓');
+                }
+
+                certWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+                showToast('Almost! Check your answers and try again—you got this!', '💪');
+            }
+        }
+
+        // Print Certificate cleanly
+        function printCertificate() {
+            const certContent = document.getElementById('printable-certificate').outerHTML;
+            const printWin = window.open('', '_blank', 'width=850,height=650');
+            if (!printWin) {
+                showToast('Please allow pop-ups or press Ctrl+P / Cmd+P to print!', '🖨️');
+                return;
+            }
+            printWin.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Official AI Prompt Master Certificate</title>
+                    <script src="https://cdn.tailwindcss.com"><\/script>
+                    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+                    <style>
+                        body { font-family: 'Inter', sans-serif; padding: 2rem; background: #fff; }
+                        .font-display { font-family: 'Fredoka', sans-serif; }
+                    </style>
+                </head>
+                <body onload="setTimeout(() => { window.print(); window.close(); }, 500)">
+                    ${certContent}
+                </body>
+                </html>
+            `);
+            printWin.document.close();
+        }
+
+        // Initialize Prompt Builder on load
+        window.addEventListener('DOMContentLoaded', () => {
+            updatePromptMachine();
+            updateStarDisplay();
+        });
+    </script>
+</body>
+</html>
